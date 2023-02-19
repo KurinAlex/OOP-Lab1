@@ -1,163 +1,133 @@
-﻿using System.Text;
+﻿namespace OOP_Lab1;
 
-namespace OOP_Lab1;
-
-public class Program
+public static class Program
 {
-    public static void Task1()
-    {
-        // initializing constants
-        const int studentId = 13479574;
-        const long a = 4;
-        const long b = 5;
-        const long n = 10;
+	public static void Task1()
+	{
+		// initializing student ID
+		const int studentId = 13479574;
 
-        // initializing c variables
-        int c2 = studentId % 2;
-        int c3 = studentId % 3;
-        int c5 = studentId % 5;
-        int c7 = studentId % 7;
-        int c = c3;
+		// initializing c variables
+		int c2 = studentId % 2;
+		int c3 = studentId % 3;
+		int c5 = studentId % 5;
+		int c7 = studentId % 7;
+		int c = c3;
 
-        // output variables
-        Console.WriteLine($"Student ID: {studentId}");
-        Console.WriteLine();
-        Console.WriteLine($"C2 = {c2}");
-        Console.WriteLine($"C3 = {c3}");
-        Console.WriteLine($"C5 = {c5}");
-        Console.WriteLine($"C7 = {c7}");
-        Console.WriteLine();
-        Console.WriteLine($"a = {a}");
-        Console.WriteLine($"b = {b}");
-        Console.WriteLine($"n = {n}");
-        Console.WriteLine();
+		// printing the variables
+		Console.WriteLine($"Student ID: {studentId}");
+		Console.WriteLine();
+		Console.WriteLine($"C2 = {c2}");
+		Console.WriteLine($"C3 = {c3}");
+		Console.WriteLine($"C5 = {c5}");
+		Console.WriteLine($"C7 = {c7}");
+		Console.WriteLine($" C = {c}");
+		Console.WriteLine();
 
-        if (-n <= c && c <= -a)
-        {
-            Console.WriteLine("Division by zero detected");
-            return;
-        }
+		// getting input for a, b and n until a will be bigger than -c or n will be less than -c
+		// (to avoid zero division in loop)
+		long a, b, n;
+		do
+		{
+			Console.WriteLine($"Enter variables (a must be bigger than {-c} or n must be less than {-c}):");
+			a = InputHelper.GetInput<long>("Enter a", long.TryParse);
+			b = InputHelper.GetInput<long>("Enter b", long.TryParse);
+			n = InputHelper.GetInput<long>("Enter n (bigger than or equal a and b)",
+				long.TryParse, n => n >= a, n => n >= b);
+			Console.WriteLine();
+		} while (-c <= n && a <= -c);
 
-        // computing sum
-        double s = 0.0;
-        for (long i = a; i <= n; i++)
-        {
-            for (long j = b; j <= n; j++)
-            {
-                s += (double)(i - j) / (i + c);
-            }
-        }
-        Console.WriteLine("S = " + s);
-    }
+		// computing sum
+		Console.WriteLine("Sum:");
+		double s = 0.0;
+		for (long i = a; i <= n; i++)
+		{
+			for (long j = b; j <= n; j++)
+			{
+				s += (double)(i - j) / (i + c);
+			}
+		}
+		Console.WriteLine("S = " + s);
+	}
 
-    public static byte[][] GenerateMatrix(int size, byte min, byte max)
-    {
-        if (size <= 0)
-        {
-            throw new ArgumentOutOfRangeException(nameof(size), "Size must be bigger than 0");
-        }
+	public static void Task2()
+	{
+		// initializing constants
+		const int gradebookId = 1618; // gradebook ID
+		const int maxSize = 20; // max acceptable matrix size
 
-        if (min > max)
-        {
-            throw new ArgumentOutOfRangeException(nameof(min), "Minimum value must be less or equal maximum value");
-        }
+		// initializing c variables
+		int c5 = gradebookId % 5;
+		int c7 = gradebookId % 7;
+		int c11 = gradebookId % 11;
 
-        var random = new Random();
-        var matrix = new byte[size][];
-        for (int i = 0; i < size; i++)
-        {
-            matrix[i] = new byte[size];
-            for (int j = 0; j < size; j++)
-            {
-                matrix[i][j] = (byte)random.Next(min, max + 1);
-            }
-        }
-        return matrix;
-    }
+		// printing the variables
+		Console.WriteLine($"Gradebook ID: {gradebookId}");
+		Console.WriteLine();
+		Console.WriteLine($"C5 = {c5}");
+		Console.WriteLine($"C7 = {c7}");
+		Console.WriteLine($"C11 = {c11}");
+		Console.WriteLine();
 
-    public static void PrintMatrix<T>(T[][] matrix, string name, int alignment)
-    {
-        var rows = matrix.Select(row =>
-            string.Concat("    { ", string.Join(", ", row.Select(n => $"{n}".PadLeft(alignment))), " }"));
+		// getting input for matrix size
+		int size = InputHelper.GetInput<int>($"Enter matrix size (bigger than 0 and less than {maxSize})", int.TryParse,
+			size => size > 0, size => size < maxSize);
+		Console.WriteLine();
 
-        var sb = new StringBuilder();
-        sb.AppendLine($"{name}:")
-            .AppendLine("{")
-            .AppendJoin(",\n", rows)
-            .AppendLine()
-            .AppendLine("}");
+		// generating and printing matrixes A and B 
+		var a = MatrixHelper.GenerateAndPrintMatrix(size, "A", 3);
+		var b = MatrixHelper.GenerateAndPrintMatrix(size, "B", 3);
 
-        Console.WriteLine(sb);
-    }
+		// computing and printing matrix C
+		Console.WriteLine("Matrix C = A ^ B:");
+		var c = new int[size][];
+		for (int i = 0; i < size; i++)
+		{
+			c[i] = new int[size];
+			for (int j = 0; j < size; j++)
+			{
+				c[i][j] = a[i][j] ^ b[i][j];
+			}
+		}
+		MatrixHelper.PrintMatrix(c);
 
-    public static void Task2()
-    {
-        // initializing constants
-        const int gradebookId = 1618;
-        const byte min = byte.MinValue; // min value for random generation
-        const byte max = byte.MaxValue; // max value for random generation
+		// computing and printing sum of matrix C rows minimum values
+		Console.Write("Sum of matrix C rows minimum values: ");
+		int s = c.Sum(row => row.Min());
+		Console.WriteLine(s);
+	}
 
-        // initializing c variables
-        int c5 = gradebookId % 5;
-        int c7 = gradebookId % 7;
-        int c11 = gradebookId % 11;
+	public static void Main()
+	{
+		// initializing actions map
+		var actions = new Dictionary<char, (string Description, Action Action)>()
+		{
+			['1'] = ("start Task 1", Task1),
+			['2'] = ("start Task 2", Task2),
+			['e'] = ("exit", () => Environment.Exit(0))
+		};
 
-        // output variables
-        Console.WriteLine($"Gradebook ID: {gradebookId}");
-        Console.WriteLine();
-        Console.WriteLine($"C5 = {c5}");
-        Console.WriteLine($"C7 = {c7}");
-        Console.WriteLine($"C11 = {c11}");
-        Console.WriteLine();
+		// infinitely ask for input
+		while (true)
+		{
+			// printing all available action choises
+			foreach (var action in actions)
+			{
+				Console.WriteLine($"Press {action.Key} to {action.Value.Description}");
+			}
 
-        // input matrix size
-        int size;
-        string input;
-        do
-        {
-            Console.Write("Enter matrix size: ");
-            input = Console.ReadLine()!;
-        } while (!int.TryParse(input, out size) || size <= 0);
-        Console.WriteLine();
+			// getting input for choise
+			char c = InputHelper.GetInput<char>("Enter your choice", char.TryParse, c => actions.ContainsKey(c));
+			Console.WriteLine();
 
-        // generation of matrixes A and B 
-        var a = GenerateMatrix(size, min, max);
-        var b = GenerateMatrix(size, min, max);
-        PrintMatrix(a, "A", 3);
-        PrintMatrix(b, "B", 3);
+			// starting chosen action
+			actions[c].Action();
+			Console.WriteLine();
 
-        // computing matrix C
-        var c = new int[size][];
-        for (int i = 0; i < size; i++)
-        {
-            c[i] = new int[size];
-            for (int j = 0; j < size; j++)
-            {
-                c[i][j] = a[i][j] ^ b[i][j];
-            }
-        }
-        PrintMatrix(c, "C", 3);
-
-        // computing sum of C's rows min values
-        int s = c.Sum(row => row.Min());
-        Console.WriteLine("s = " + s);
-    }
-
-    public static void Main()
-    {
-        // task 1
-        Console.WriteLine("Task 1:");
-        Console.WriteLine();
-        Task1();
-
-        Console.WriteLine();
-        Console.WriteLine();
-
-        //task 2
-        Console.WriteLine("Task 2:");
-        Console.WriteLine();
-        Task2();
-
-        Console.ReadLine();
-    }
+			// waiting for pressing any key and clear console
+			Console.Write("Press any key to continue...");
+			Console.ReadLine();
+			Console.Clear();
+		}
+	}
 }
