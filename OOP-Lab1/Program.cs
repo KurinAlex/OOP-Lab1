@@ -54,7 +54,7 @@ public static class Program
 	{
 		// initializing constants
 		const int gradebookId = 1618; // gradebook ID
-		const int maxSize = 20; // max acceptable matrix size
+		const int maxSize = 19; // max acceptable matrix size
 
 		// initializing c variables
 		int c5 = gradebookId % 5;
@@ -74,37 +74,32 @@ public static class Program
 			size => size > 0, size => size < maxSize);
 		Console.WriteLine();
 
-		// generating and printing matrixes A and B 
-		var a = MatrixHelper.GenerateAndPrintMatrix(size, "A", 3);
-		var b = MatrixHelper.GenerateAndPrintMatrix(size, "B", 3);
+		// generating and printing matrixes A and B
+		var a = Matrix.GenerateAndPrintMatrix(size, "A");
+		var b = Matrix.GenerateAndPrintMatrix(size, "B");
 
 		// computing and printing matrix C
 		Console.WriteLine("Matrix C = A ^ B:");
-		var c = new int[size][];
-		for (int i = 0; i < size; i++)
-		{
-			c[i] = new int[size];
-			for (int j = 0; j < size; j++)
-			{
-				c[i][j] = a[i][j] ^ b[i][j];
-			}
-		}
-		MatrixHelper.PrintMatrix(c);
+		var c = a ^ b;
+		Console.WriteLine(c);
+		Console.WriteLine();
 
 		// computing and printing sum of matrix C rows minimum values
 		Console.Write("Sum of matrix C rows minimum values: ");
-		int s = c.Sum(row => row.Min());
-		Console.WriteLine(s);
+		Console.WriteLine(c.GetSumOfRowsMinValues());
 	}
 
 	public static void Main()
 	{
+		// initializing bool variable for detecting if exit from program is needed
+		bool needExit = false;
+
 		// initializing actions map
 		var actions = new Dictionary<char, (string Description, Action Action)>()
 		{
 			['1'] = ("start Task 1", Task1),
 			['2'] = ("start Task 2", Task2),
-			['e'] = ("exit", () => Environment.Exit(0))
+			['e'] = ("exit", () => needExit = true)
 		};
 
 		// infinitely ask for input
@@ -123,6 +118,12 @@ public static class Program
 			// starting chosen action
 			actions[c].Action();
 			Console.WriteLine();
+
+			// exitting from main loop if exit is needed
+			if (needExit)
+			{
+				break;
+			}
 
 			// waiting for pressing any key and clear console
 			Console.Write("Press any key to continue...");

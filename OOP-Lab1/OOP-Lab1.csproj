@@ -8,4 +8,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Matrix.cs~RF77b9c7.TMP" />
+  </ItemGroup>
+
 </Project>
